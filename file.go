@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -15,6 +16,7 @@ type swagFile struct {
 	*bufio.Reader
 	*bufio.Writer
 	Result *Swag
+	Seek   int
 	bool
 }
 
@@ -34,6 +36,7 @@ func newSwagFile() *swagFile {
 			Paths:       map[string]map[string]Path{},
 			Definitions: map[string]interface{}{},
 		},
+		0,
 		false,
 	}
 	f.Result.Version = "2.0"
@@ -48,8 +51,9 @@ func (s *swagFile) ReadNext() string {
 	// regex
 	var d = hashTagRegex.FindAllStringSubmatch(string(data), 1)
 	if len(d[0]) == 1 {
-		panic("invalid format")
+		panic("invalid format - line" + strconv.Itoa(s.Seek))
 	}
+	s.Seek += 1
 	return d[0][1]
 }
 
@@ -79,5 +83,18 @@ func (s *swagFile) GetPath() string {
 	if s.bool == false {
 		panic("you forgot get title")
 	}
-	var data = s.ReadNext()
+	// Method URL
+	var data = strings.Split(s.ReadNext(), " | ")
+	if s.Result.Paths[data[1]] == nil {
+		s.Result.Paths[data[1]] = map[string]Path{}
+	}
+	s.Result.Paths[data[1]][data[0]] = Path{
+		Summary:    data[2],
+		Parameters: []Parameter{},
+		Responses:  map[string]Response{},
+	}
+	// definitions
+	// Request
+	// Response
+	return ""
 }
