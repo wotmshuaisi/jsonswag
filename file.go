@@ -53,7 +53,7 @@ func (s *swagFile) ReadNext() string {
 	return d[0][1]
 }
 
-func (s *swagFile) getTitle() {
+func (s *swagFile) GetTitle() {
 	if s.bool {
 		return
 	}
@@ -72,4 +72,12 @@ func (s *swagFile) getTitle() {
 		s.Result.Info["title"] = title[0]
 	}
 	s.bool = true
+}
+
+// GetPath write a path into Swag return path
+func (s *swagFile) GetPath() string {
+	if s.bool == false {
+		panic("you forgot get title")
+	}
+	var data = s.ReadNext()
 }
