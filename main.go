@@ -8,7 +8,7 @@ import (
 func main() {
 	// title
 	s := newSwagFile()
-	s.getTitle()
+	s.GetTitle()
 	var d, _ = json.Marshal(s.Result)
 	fmt.Println(string(d))
 }
