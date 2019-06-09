@@ -1,9 +1,10 @@
 {
+  "swagger": "2.0",
   "info": {
     "title": "OnedbAPI",
+    "description": "a sample api for generate swag doc",
     "version": "1.0.0"
   },
-  "swagger": "2.0",
   "paths": {
     "/api/articles/chinaid": {
       "post": {
