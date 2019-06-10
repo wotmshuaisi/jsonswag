@@ -1,5 +1,18 @@
 package main
 
+const (
+	// Number ...
+	Number = "number"
+	// String ...
+	String = "string"
+	// Boolean ...
+	Boolean = "boolean"
+	// Array ...
+	Array = "array"
+	// Object ...
+	Object = "object"
+)
+
 // Swag ...
 type Swag struct {
 	Version     string                     `json:"swagger"`
@@ -32,5 +45,6 @@ type Parameter struct {
 // Definition ...
 type Definition struct {
 	Type       string      `json:"type"`
-	Properties interface{} `json:"properties"`
+	Items      interface{} `json:"items,omitempty"`
+	Properties interface{} `json:"properties,omitempty"`
 }
