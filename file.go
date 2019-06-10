@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -119,11 +120,19 @@ func (s *swagFile) GetPath() string {
 func processJSON(j []byte) Definition {
 	// return  definition
 	var d = map[string]interface{}{}
+	var s = []interface{}{}
+	var object = true
 	if err := json.Unmarshal(j, &d); err != nil {
-		panic(err)
+		if err := json.Unmarshal(j, &s); err != nil {
+			panic(err)
+		}
+		object = false
 	}
-	// for k, v := range d {
-
-	// }
+	if object {
+		for k, v := range d {
+			fmt.Println(k, typeDetection(v))
+			d[k] = typeDetection(v)
+		}
+	}
 	return Definition{}
 }
