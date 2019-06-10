@@ -1,5 +1,6 @@
 package main
 
+// Swag ...
 type Swag struct {
 	Version     string                     `json:"swagger"`
 	Info        map[string]string          `json:"info"`
@@ -7,17 +8,20 @@ type Swag struct {
 	Definitions map[string]interface{}     `json:"definitions"`
 }
 
+// Path ...
 type Path struct {
 	Summary    string              `json:"summary"`
 	Parameters []Parameter         `json:"parameters"`
 	Responses  map[string]Response `json:"responses"`
 }
 
+// Response ...
 type Response struct {
 	Description string            `json:"description"`
 	Schema      map[string]string `json:"schema"`
 }
 
+// Parameter ...
 type Parameter struct {
 	Name     string            `json:"name"`
 	In       string            `json:"in"`
@@ -25,6 +29,7 @@ type Parameter struct {
 	Schema   map[string]string `json:"schema"`
 }
 
+// Definition ...
 type Definition struct {
 	Type       string      `json:"type"`
 	Properties interface{} `json:"properties"`
