@@ -116,12 +116,15 @@ func (s *swagFile) GetPath() string {
 
 // public functions
 
-func processJSON(j []byte) Definition {
+func processJSON(j []byte) *Definition {
 	// return  definition
-	var result = Definition{}
+	var result = &Definition{}
 	var d = map[string]interface{}{}
 	var s = []interface{}{}
 	var object = true
+	if len(j) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(j, &d); err != nil {
 		if err := json.Unmarshal(j, &s); err != nil {
 			panic(err)
@@ -131,13 +134,30 @@ func processJSON(j []byte) Definition {
 	// object
 	if object {
 		if len(d) == 0 {
-			return Definition{}
+			return &Definition{}
 		}
 		result.Type = Object
-		var properties = map[string]Definition{}
+		var properties = map[string]*Definition{}
 		for k, v := range d {
-			properties[k] = Definition{
+			var childData, _ = json.Marshal(v)
+			var childMap = map[string]interface{}{}
+			json.Unmarshal(childData, &childMap)
+			properties[k] = &Definition{
 				Type: typeDetection(v),
+			}
+			if properties[k].Type == Object {
+				properties[k].Properties = map[string]*Definition{}
+				for kk, vv := range childMap {
+					var t = typeDetection(vv)
+					if t != Object {
+						properties[k].Properties[kk] = &Definition{
+							Type: t,
+						}
+						continue
+					}
+					var mapData, _ = json.Marshal(vv)
+					properties[k].Properties[kk] = processJSON(mapData)
+				}
 			}
 		}
 		result.Properties = properties
@@ -145,10 +165,10 @@ func processJSON(j []byte) Definition {
 	}
 	// array
 	if len(s) == 0 {
-		return Definition{}
+		return &Definition{}
 	}
 	result.Type = "array"
-	result.Items = Definition{
+	result.Items = &Definition{
 		Type: typeDetection(s[0]),
 	}
 	return result

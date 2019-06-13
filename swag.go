@@ -44,7 +44,7 @@ type Parameter struct {
 
 // Definition ...
 type Definition struct {
-	Type       string      `json:"type"`
-	Items      interface{} `json:"items,omitempty"`
-	Properties interface{} `json:"properties,omitempty"`
+	Type       string                 `json:"type"`
+	Items      *Definition            `json:"items,omitempty"`
+	Properties map[string]*Definition `json:"properties,omitempty"`
 }
