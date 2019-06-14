@@ -169,7 +169,24 @@ func processJSON(j []byte) *Definition {
 	}
 	result.Type = "array"
 	result.Items = &Definition{
-		Type: typeDetection(s[0]),
+		Type:       typeDetection(s[0]),
+		Properties: map[string]*Definition{},
+	}
+	if result.Items.Type == Object {
+		var childData, _ = json.Marshal(s[0])
+		var childMap = map[string]interface{}{}
+		json.Unmarshal(childData, &childMap)
+		for kk, vv := range childMap {
+			var t = typeDetection(vv)
+			if t != Object {
+				result.Items.Properties[kk] = &Definition{
+					Type: t,
+				}
+				continue
+			}
+			var mapData, _ = json.Marshal(vv)
+			result.Items.Properties[kk] = processJSON(mapData)
+		}
 	}
 	return result
 }
