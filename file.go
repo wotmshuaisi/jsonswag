@@ -155,12 +155,13 @@ func processJSON(j []byte) *Definition {
 		var properties = map[string]*Definition{}
 		for k, v := range d {
 			var childData, _ = json.Marshal(v)
-			var childMap = map[string]interface{}{}
-			json.Unmarshal(childData, &childMap)
 			properties[k] = &Definition{
 				Type: typeDetection(v),
 			}
-			if properties[k].Type == Object {
+			switch properties[k].Type {
+			case Object:
+				var childMap = map[string]interface{}{}
+				json.Unmarshal(childData, &childMap)
 				properties[k].Properties = map[string]*Definition{}
 				for kk, vv := range childMap {
 					var t = typeDetection(vv)
@@ -172,6 +173,18 @@ func processJSON(j []byte) *Definition {
 					}
 					var mapData, _ = json.Marshal(vv)
 					properties[k].Properties[kk] = processJSON(mapData)
+				}
+			case Array:
+				var childArray = []interface{}{}
+				json.Unmarshal(childData, &childArray)
+				var arrayData, _ = json.Marshal(childArray[0])
+				switch typeDetection(childArray[0]) {
+				case Object, Array:
+					properties[k].Items = processJSON(arrayData)
+				default:
+					properties[k].Items = &Definition{
+						Type: typeDetection(childArray[0]),
+					}
 				}
 			}
 		}
@@ -187,21 +200,19 @@ func processJSON(j []byte) *Definition {
 		Type:       typeDetection(s[0]),
 		Properties: map[string]*Definition{},
 	}
-	if result.Items.Type == Object {
-		var childData, _ = json.Marshal(s[0])
-		var childMap = map[string]interface{}{}
-		json.Unmarshal(childData, &childMap)
-		for kk, vv := range childMap {
-			var t = typeDetection(vv)
-			if t != Object {
-				result.Items.Properties[kk] = &Definition{
-					Type: t,
-				}
-				continue
+	var childData, _ = json.Marshal(s[0]) // get first element
+	var childMap = map[string]interface{}{}
+	json.Unmarshal(childData, &childMap)
+	for kk, vv := range childMap {
+		var t = typeDetection(vv)
+		if t != Object {
+			result.Items.Properties[kk] = &Definition{
+				Type: t,
 			}
-			var mapData, _ = json.Marshal(vv)
-			result.Items.Properties[kk] = processJSON(mapData)
+			continue
 		}
+		var mapData, _ = json.Marshal(vv)
+		result.Items.Properties[kk] = processJSON(mapData)
 	}
 	return result
 }
