@@ -90,7 +90,7 @@ func (s *swagFile) GetTitle() {
 }
 
 // GetPath write a path into Swag return path
-func (s *swagFile) GetPath() string {
+func (s *swagFile) GetPath() {
 	if s.bool == false {
 		panic("you forgot get title")
 	}
@@ -102,16 +102,31 @@ func (s *swagFile) GetPath() string {
 		s.Result.Paths[uri] = map[string]Path{}
 	}
 	s.Result.Paths[uri][method] = Path{
-		Summary:    summary,
-		Parameters: []Parameter{},
-		Responses:  map[string]Response{},
+		Summary: summary,
+		Parameters: []Parameter{Parameter{
+			Name:     "body",
+			In:       "body",
+			Required: true,
+			Schema:   map[string]string{"$ref": "#/definitions/"},
+		}},
+		Responses: map[string]Response{"200": Response{
+			Description: "OK",
+			Schema:      map[string]string{"$ref": "#/definitions/"},
+		}},
 	}
 	// Request
+	var reqID = method + strings.ReplaceAll(uri, "/", "") + "Request"
+	s.Result.Paths[uri][method].Parameters[0].Schema["$ref"] = "#/definitions/" + reqID // set definition
 	var _, request = s.ReadNext(true)
-	processJSON(request)
+	var reqDef = processJSON(request)
+	s.Result.Definitions[reqID] = reqDef
 	// Response
+	var resID = method + strings.ReplaceAll(uri, "/", "") + "Response"
+	s.Result.Paths[uri][method].Responses["200"].Schema["$ref"] = "#/definitions/" + resID // set definition
+	var _, response = s.ReadNext(true)
+	var resDef = processJSON(response)
+	s.Result.Definitions[resID] = resDef
 	// definitions
-	return ""
 }
 
 // public functions
