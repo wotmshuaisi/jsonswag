@@ -24,7 +24,7 @@ type Swag struct {
 // Path ...
 type Path struct {
 	Summary    string              `json:"summary"`
-	Parameters []Parameter         `json:"parameters"`
+	Parameters []*Parameter        `json:"parameters"`
 	Responses  map[string]Response `json:"responses"`
 }
 

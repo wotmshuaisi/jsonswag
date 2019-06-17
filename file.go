@@ -107,32 +107,43 @@ func (s *swagFile) GetPath() {
 	if s.Result.Paths[uri] == nil {
 		s.Result.Paths[uri] = map[string]Path{}
 	}
-	s.Result.Paths[uri][method] = Path{
-		Summary: summary,
-		Parameters: []Parameter{Parameter{
-			Name:     "body",
-			In:       "body",
-			Required: true,
-			Schema:   map[string]string{"$ref": "#/definitions/"},
-		}},
-		Responses: map[string]Response{"200": Response{
-			Description: "OK",
-			Schema:      map[string]string{"$ref": "#/definitions/"},
-		}},
-	}
+	var parameters = []*Parameter{}
+	var responses = map[string]Response{}
 	// Request
-	var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
-	s.Result.Paths[uri][method].Parameters[0].Schema["$ref"] = "#/definitions/" + reqID // set definition
 	var _, request = s.ReadNext(true)
-	var reqDef = processJSON(request)
-	s.Result.Definitions[reqID] = reqDef
+	if len(request) != 0 {
+		var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
+		parameters = append(
+			parameters,
+			&Parameter{
+				Name:     "body",
+				In:       "body",
+				Required: true,
+				Schema:   map[string]string{"$ref": "#/definitions/" + reqID},
+			},
+		)
+		// definition
+		var reqDef = processJSON(request)
+		s.Result.Definitions[reqID] = reqDef
+	}
+
 	// Response
-	var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
-	s.Result.Paths[uri][method].Responses["200"].Schema["$ref"] = "#/definitions/" + resID // set definition
 	var _, response = s.ReadNext(true)
-	var resDef = processJSON(response)
-	s.Result.Definitions[resID] = resDef
-	// definitions
+	if len(response) != 0 {
+		var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
+		responses["200"] = Response{
+			Schema: map[string]string{"$ref": "#/definitions/" + resID},
+		}
+		var resDef = processJSON(response)
+		s.Result.Definitions[resID] = resDef
+	}
+
+	// result
+	s.Result.Paths[uri][method] = Path{
+		Summary:    summary,
+		Parameters: parameters,
+		Responses:  responses,
+	}
 }
 
 // public functions
