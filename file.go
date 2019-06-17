@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
@@ -23,11 +24,16 @@ type swagFile struct {
 
 // Methods
 
-func newSwagFile() *swagFile {
-	var input, err = os.OpenFile("./plain.txt", os.O_RDONLY, 0644)
+func newSwagFile(path string) *swagFile {
+	var input, err = os.OpenFile(path, os.O_RDONLY, 0644)
 	if err != nil {
 		panic("error occured while opening")
 	}
+	if (fileRows(input)-1)%3 != 0 {
+		panic("invalid file(lines).")
+	}
+	input.Seek(0, 0) // seek to file top
+	// output file
 	output, err := os.OpenFile("./result.json", os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		panic("error occured while opening")
@@ -115,13 +121,13 @@ func (s *swagFile) GetPath() {
 		}},
 	}
 	// Request
-	var reqID = method + strings.ReplaceAll(uri, "/", "") + "Request"
+	var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
 	s.Result.Paths[uri][method].Parameters[0].Schema["$ref"] = "#/definitions/" + reqID // set definition
 	var _, request = s.ReadNext(true)
 	var reqDef = processJSON(request)
 	s.Result.Definitions[reqID] = reqDef
 	// Response
-	var resID = method + strings.ReplaceAll(uri, "/", "") + "Response"
+	var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
 	s.Result.Paths[uri][method].Responses["200"].Schema["$ref"] = "#/definitions/" + resID // set definition
 	var _, response = s.ReadNext(true)
 	var resDef = processJSON(response)
@@ -215,4 +221,20 @@ func processJSON(j []byte) *Definition {
 		result.Items.Properties[kk] = processJSON(mapData)
 	}
 	return result
+}
+
+func fileRows(r io.Reader) int {
+	var rb = bufio.NewReader(r)
+	var count = 0
+	for {
+		_, _, err := rb.ReadLine()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+		count++
+	}
+	return count
 }
