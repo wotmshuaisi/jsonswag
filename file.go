@@ -129,14 +129,15 @@ func (s *swagFile) GetPath() {
 
 	// Response
 	var _, response = s.ReadNext(true)
+	var res = Response{Description: "OK"}
 	if len(response) != 0 {
-		var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
-		responses["200"] = Response{
-			Schema: map[string]string{"$ref": "#/definitions/" + resID},
-		}
 		var resDef = processJSON(response)
+		var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
+		res.Schema = map[string]string{"$ref": "#/definitions/" + resID}
+		// definition
 		s.Result.Definitions[resID] = resDef
 	}
+	responses["200"] = res
 
 	// result
 	s.Result.Paths[uri][method] = Path{

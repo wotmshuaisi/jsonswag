@@ -5,3 +5,6 @@
 ## get | /api/g | sample GET request
 ### 
 ### {"num1":0,"str1":"string","data":[{"str1":"string","str2":"string","arr1":["string"]}]}
+## get | /api/h | sample GET request
+### 
+### 

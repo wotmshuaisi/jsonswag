@@ -31,7 +31,7 @@ type Path struct {
 // Response ...
 type Response struct {
 	Description string            `json:"description"`
-	Schema      map[string]string `json:"schema"`
+	Schema      map[string]string `json:"schema,omitempty"`
 }
 
 // Parameter ...
