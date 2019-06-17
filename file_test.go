@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 )
 
@@ -35,5 +36,12 @@ func Test_processJSON(t *testing.T) {
 	}
 	if len(r) != 234 {
 		t.Fatal(len(r))
+	}
+}
+
+func Test_fileRows(t *testing.T) {
+	var file, _ = os.Open("./plain_sample.txt")
+	if fileRows(file) != 7 {
+		t.Fatal()
 	}
 }
