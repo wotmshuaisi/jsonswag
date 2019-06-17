@@ -26,4 +26,14 @@ func Test_processJSON(t *testing.T) {
 	if len(r) != 116 {
 		t.Fatal(len(r))
 	}
+	// nested arrray
+	data = []byte(`{"num1":0,"data":[{"str1":"string","arr1":[{"a":1}]}]}`)
+	d = processJSON(data)
+	r, _ = json.Marshal(d)
+	if err != nil {
+		t.Fatal(r)
+	}
+	if len(r) != 234 {
+		t.Fatal(len(r))
+	}
 }
