@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"io"
 	"os"
@@ -107,27 +108,32 @@ func (s *swagFile) GetPath() {
 	if s.Result.Paths[uri] == nil {
 		s.Result.Paths[uri] = map[string]Path{}
 	}
+	// request && response
 	var parameters = []*Parameter{}
 	var responses = map[string]Response{}
-	// Request
+
 	var _, request = s.ReadNext(true)
 	if len(request) != 0 {
-		var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
-		parameters = append(
-			parameters,
-			&Parameter{
-				Name:     "body",
-				In:       "body",
-				Required: true,
-				Schema:   map[string]string{"$ref": "#/definitions/" + reqID},
-			},
-		)
+		var req = bytes.Split(request, []byte(" | "))
+		switch len(req) {
+		case 3:
+		case 2:
+		case 1:
+		}
+		// var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
+		// parameters = append(
+		// 	parameters,
+		// 	&Parameter{
+		// 		Name:   "body",
+		// 		In:     "body",
+		// 		Schema: map[string]string{"$ref": "#/definitions/" + reqID},
+		// 	},
+		// )
 		// definition
-		var reqDef = processJSON(request)
-		s.Result.Definitions[reqID] = reqDef
+		// var reqDef = processJSON(request)
+		// s.Result.Definitions[reqID] = reqDef
 	}
 
-	// Response
 	var _, response = s.ReadNext(true)
 	var res = Response{Description: "OK"}
 	if len(response) != 0 {
@@ -249,4 +255,8 @@ func fileRows(r io.Reader) int {
 		count++
 	}
 	return count
+}
+
+func inDetect(items, index int) string {
+	return ""
 }
