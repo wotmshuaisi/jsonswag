@@ -49,8 +49,11 @@ func Test_fileRows(t *testing.T) {
 func Test_processParams(t *testing.T) {
 	var p = []*Parameter{}
 	var teststr = []byte("id:integer,cid:string")
-	processParams(&p, teststr)
+	processParams(&p, teststr, "path")
 	if len(p) != 2 {
 		t.Fatal(p)
+	}
+	if p[0].Type != "path" {
+		t.Fatal(p[0].Type)
 	}
 }

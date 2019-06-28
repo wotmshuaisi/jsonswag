@@ -116,12 +116,17 @@ func (s *swagFile) GetPath() {
 	if len(request) != 0 {
 		var req = bytes.Split(request, []byte(" | "))
 		switch len(req) {
+		case 3:
+			// query parameters
+			processParams(&parameters, req[len(req)-3], "query")
+			fallthrough
 		case 2:
-			// url parameters
-			processParams(&parameters, req[len(req)-2])
+			// path parameters
+			processParams(&parameters, req[len(req)-2], "path")
+			fallthrough
 		case 1:
 			// json
-			var reqID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Request"
+			var reqID = strings.ToUpper(method) + uriParser(uri) + "__Request"
 			parameters = append(
 				parameters,
 				&Parameter{
@@ -231,26 +236,27 @@ func processJSON(j []byte) *Definition {
 	json.Unmarshal(childData, &childMap)
 	for kk, vv := range childMap {
 		var t = typeDetection(vv)
-		if t != Object {
+		switch t {
+		case Object, Array:
+			var mapData, _ = json.Marshal(vv)
+			result.Items.Properties[kk] = processJSON(mapData)
+		default:
 			result.Items.Properties[kk] = &Definition{
 				Type: t,
 			}
-			continue
 		}
-		var mapData, _ = json.Marshal(vv)
-		result.Items.Properties[kk] = processJSON(mapData)
 	}
 	return result
 }
 
-func processParams(list *[]*Parameter, params []byte) {
+func processParams(list *[]*Parameter, params []byte, t string) {
 	for _, item := range bytes.Split(params, []byte(",")) {
 		var keyValue = bytes.Split(item, []byte(":"))
 		*list = append(*list, &Parameter{
 			Required: true,
 			Name:     string(keyValue[0]),
 			Type:     string(keyValue[1]),
-			In:       "path",
+			In:       t,
 		})
 	}
 }
@@ -273,4 +279,11 @@ func fileRows(r io.Reader) int {
 
 func inDetect(items, index int) string {
 	return ""
+}
+
+func uriParser(uri string) string {
+	uri = strings.ReplaceAll(uri, "/", "_")
+	uri = strings.ReplaceAll(uri, "{", "__")
+	uri = strings.ReplaceAll(uri, "}", "__")
+	return uri
 }

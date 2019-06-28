@@ -1,7 +1,13 @@
 # Sample API - a sample api for generate swag doc - 1.0.0
 ## post | /api/p | sample POST request
-### {"str1":"string","num1":0,"num2":0,"str2":"string"}
+### {"str1":"string","num1":0,"num2":0,"str2":"string", "bool1": true}
 ### {"num1":0,"str1":"string","data":[{"str1":"string","str2":"string","arr1":["string"]}]}
 ## get | /api/g | sample GET request
 ### 
 ### {"num1":0,"str1":"string","data":[{"str1":"string","str2":"string","arr1":["string"]}]}
+## get | /api/h | sample GET request
+### 
+### 
+## get | /api/j/{id}/{cid} | sample GET request
+### page:integer,size:integer | id:integer,cid:string | status:integer,page:integer,size:integer
+### 
