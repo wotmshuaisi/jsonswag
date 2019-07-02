@@ -21,7 +21,7 @@ type swagFile struct {
 	*bufio.Writer
 	Result *Swag
 	Seek   int
-	bool
+	bool   // flag for title has been read or not
 }
 
 // Methods
@@ -54,8 +54,11 @@ func newSwagFile(path string) *swagFile {
 	return f
 }
 
-func (s *swagFile) ReadNext(b bool) (string, []byte) {
+func (s *swagFile) ReadNext(b bool) (string, []byte, bool) {
 	data, _, err := s.ReadLine()
+	if err == io.EOF {
+		return "", nil, true
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -66,21 +69,24 @@ func (s *swagFile) ReadNext(b bool) (string, []byte) {
 			panic("invalid format - line" + strconv.Itoa(s.Seek))
 		}
 		s.Seek++
-		return d[0][1], nil
+		return d[0][1], nil, false
 	}
 	var d = hashTagRegex.FindAllSubmatch(data, 1)
 	if len(d[0]) == 1 {
 		panic("invalid format - line" + strconv.Itoa(s.Seek))
 	}
 	s.Seek++
-	return "", d[0][1]
+	return "", d[0][1], false
 }
 
-func (s *swagFile) GetTitle() {
+func (s *swagFile) GetTitle() bool {
 	if s.bool {
-		return
+		return false
 	}
-	var data, _ = s.ReadNext(false)
+	var data, _, eof = s.ReadNext(false)
+	if eof {
+		return eof
+	}
 	// title processing
 	var title = strings.Split(data, " - ")
 	s.Result.Info = map[string]string{}
@@ -95,15 +101,19 @@ func (s *swagFile) GetTitle() {
 		s.Result.Info["title"] = title[0]
 	}
 	s.bool = true
+	return false
 }
 
 // GetPath write a path into Swag return path
-func (s *swagFile) GetPath() {
+func (s *swagFile) GetPath() bool {
 	if s.bool == false {
-		panic("you forgot get title")
+		panic("title information is required")
 	}
 	// Method URL
-	var data, _ = s.ReadNext(false)
+	var data, _, eof = s.ReadNext(false)
+	if eof {
+		return eof
+	}
 	var d = strings.Split(data, " | ")
 	var method, uri, summary = d[0], d[1], d[2]
 	if s.Result.Paths[uri] == nil {
@@ -112,8 +122,7 @@ func (s *swagFile) GetPath() {
 	// request && response
 	var parameters = []*Parameter{}
 	var responses = map[string]Response{}
-
-	var _, request = s.ReadNext(true)
+	var _, request, _ = s.ReadNext(true)
 	if len(request) != 0 {
 		var req = bytes.Split(request, []byte(" | "))
 		switch len(req) {
@@ -142,7 +151,7 @@ func (s *swagFile) GetPath() {
 		}
 	}
 
-	var _, response = s.ReadNext(true)
+	var _, response, _ = s.ReadNext(true)
 	var res = Response{Description: "OK"}
 	if len(response) != 0 {
 		var resDef = processJSON(response)
@@ -159,6 +168,7 @@ func (s *swagFile) GetPath() {
 		Parameters: parameters,
 		Responses:  responses,
 	}
+	return false
 }
 
 // public functions
