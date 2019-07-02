@@ -26,7 +26,7 @@ type swagFile struct {
 
 // Methods
 
-func newSwagFile(path string) *swagFile {
+func newSwagFile(path, outputpath string) *swagFile {
 	var input, err = os.OpenFile(path, os.O_RDONLY, 0644)
 	if err != nil {
 		panic("error occured while opening")
@@ -36,7 +36,7 @@ func newSwagFile(path string) *swagFile {
 	}
 	input.Seek(0, 0) // seek to file top
 	// output file
-	output, err := os.OpenFile("./result.json", os.O_WRONLY|os.O_CREATE, 0644)
+	output, err := os.OpenFile(outputpath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		panic("error occured while opening")
 	}
@@ -169,6 +169,18 @@ func (s *swagFile) GetPath() bool {
 		Responses:  responses,
 	}
 	return false
+}
+
+// SaveToPath save result to file
+func (s *swagFile) SaveToPath(pretty bool) {
+	var d []byte
+	if *prettyprint {
+		d, _ = json.MarshalIndent(s.Result, "", "  ")
+	} else {
+		d, _ = json.Marshal(s.Result)
+	}
+	s.Write(d)
+	s.Flush()
 }
 
 // public functions

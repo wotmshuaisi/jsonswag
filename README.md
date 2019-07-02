@@ -6,6 +6,8 @@ simply generate swag doc json by specific plain text, easy to build a swagger do
 
 # How to use
 
+[![asciicast](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR.svg)](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR)
+
 ```bash
 > ./jsonswag 
   -f string

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"os"
 )
 
 var (
@@ -18,7 +16,7 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
-	var swag = newSwagFile(*filepath)
+	var swag = newSwagFile(*filepath, *outputpath)
 	if eof := swag.GetTitle(); eof {
 		return
 	}
@@ -27,16 +25,5 @@ func main() {
 			break
 		}
 	}
-	var d []byte
-	if *prettyprint {
-		d, _ = json.MarshalIndent(swag.Result, "", "  ")
-	} else {
-		d, _ = json.Marshal(swag.Result)
-	}
-	var output, err = os.OpenFile(*outputpath, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-	output.Write(d)
-	output.Close()
+	swag.SaveToPath(*prettyprint)
 }
