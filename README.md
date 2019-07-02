@@ -17,11 +17,9 @@ simply generate swag doc json by specific plain text, easy to build a swagger do
 
 ## Plain Text Standard
 
-> [Data Types in swagger](https://swagger.io/specification/#dataTypes)
-
 - `*` required
 - nested json supported
-- path/query parameters follow `name:type` format
+- path/query parameters follow `name:type` format, [Data Types in swagger](https://swagger.io/specification/#dataTypes)
 
 ```md
 # [*title] - [*description] - [*version]
@@ -30,7 +28,7 @@ simply generate swag doc json by specific plain text, easy to build a swagger do
 ### [json response]
 ```
 
-check example on [](plain_sample)
+check example on [plain_sample](plain_sample)
 
 # Know the Limitation
 
