@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"regexp"
@@ -145,7 +146,7 @@ func (s *swagFile) GetPath() {
 	var res = Response{Description: "OK"}
 	if len(response) != 0 {
 		var resDef = processJSON(response)
-		var resID = strings.ToUpper(method) + strings.ReplaceAll(uri, "/", "_") + "__Response"
+		var resID = strings.ToUpper(method) + uriParser(uri) + "__Response"
 		res.Schema = map[string]string{"$ref": "#/definitions/" + resID}
 		// definition
 		s.Result.Definitions[resID] = resDef
@@ -173,6 +174,7 @@ func processJSON(j []byte) *Definition {
 	}
 	if err := json.Unmarshal(j, &d); err != nil {
 		if err := json.Unmarshal(j, &s); err != nil {
+			fmt.Println(string(j))
 			panic(err)
 		}
 		object = false

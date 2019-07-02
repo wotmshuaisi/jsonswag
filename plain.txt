@@ -9,5 +9,5 @@
 ### 
 ### 
 ## get | /api/j/{id}/{cid} | sample GET request
-### page:integer,size:integer | id:integer,cid:string | status:integer,page:integer,size:integer
-### 
+### page:integer,size:integer | id:integer,cid:string | {"str1":"string","str2":"string","arr1":["string"]}
+### {"str1":"string","str2":"string","arr1":["string"]}
