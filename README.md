@@ -24,7 +24,7 @@ Download binary file from [Release Page](https://github.com/wotmshuaisi/jsonswag
 
 ### For windows
 
-server yourself, i don't know how
+serve yourself, i don't know how
 
 ## How to use
 
