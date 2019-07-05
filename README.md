@@ -4,7 +4,7 @@
 
 simply generate swag doc json by specific plain text, easy to build a swagger document
 
-# How to use
+## How to use
 
 [![asciicast](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR.svg)](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR)
 
@@ -34,7 +34,11 @@ simply generate swag doc json by specific plain text, easy to build a swagger do
 
 check example on [plain_sample](plain_sample)
 
-# Know the Limitation
+## Know the Limitation
 
 - only supported json request & response
 - enum / require / etc... limitation are not supported in request yet
+
+## LICENSE
+
+[![](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png)](http://www.wtfpl.net/)
