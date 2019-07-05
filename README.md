@@ -21,7 +21,9 @@ simply generate swag doc json by specific plain text, easy to build a swagger do
 
 - `*` required
 - nested json supported
-- path/query parameters follow `name:type` format, [Data Types in swagger](https://swagger.io/specification/#dataTypes)
+- path/query parameters follow `name:type` format, separate by `,` 
+
+> [Data Types in swagger](https://swagger.io/specification/#dataTypes)
 
 ```md
 # [*title] - [*description] - [*version]
