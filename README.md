@@ -4,6 +4,28 @@
 
 simply generate swag doc json by specific plain text, easy to build a swagger document
 
+## Installation
+
+Download binary file from [Release Page](https://github.com/wotmshuaisi/jsonswag/releases)
+
+### For linux
+
+```bash
+> curl https://github.com/wotmshuaisi/jsonswag/releases/download/latest/jsonswag-linux-amd64 -o jsonswag
+> chmod +x jsonswag
+> mv jsonswag ~/bin/
+> jsonswag -h
+  -f string
+        *[required] file path
+  -o string
+        output file path (default "./swagger.json")
+  -p    pretty print
+```
+
+### For windows
+
+server yourself, i don't know how
+
 ## How to use
 
 [![asciicast](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR.svg)](https://asciinema.org/a/lrb9iXEtYy4UfgHqVzIAhfHHR)
